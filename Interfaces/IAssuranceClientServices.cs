@@ -10,5 +10,6 @@ namespace BanqueTardi.Interfaces
         Task Ajouter(AssuranceTardi Assurance);
         Task Supprimer(int id);
         Task Modifier(AssuranceTardi Assurance);
+        Task Confirmer(int id);
     }
 }

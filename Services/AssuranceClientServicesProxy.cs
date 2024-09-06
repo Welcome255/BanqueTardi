@@ -17,7 +17,7 @@ namespace BanqueTardi.Services
         public async Task Ajouter(AssuranceTardi Assurance)
         {
             StringContent content = new StringContent(JsonConvert.SerializeObject(Assurance), Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync(_assuranceClientApiUrl, content);
+            await _httpClient.PostAsync(_assuranceClientApiUrl + "Creation", content);
         }
 
         public async Task Modifier(AssuranceTardi Assurance)
@@ -39,6 +39,11 @@ namespace BanqueTardi.Services
         public async Task Supprimer(int id)
         {
             await _httpClient.DeleteAsync(_assuranceClientApiUrl + id); 
+        }
+        public async Task Confirmer(int id)
+        {
+            StringContent content = new StringContent(JsonConvert.SerializeObject(new {statut = true}), Encoding.UTF8, "application/json");
+            await _httpClient.PutAsync(_assuranceClientApiUrl+ "Confirmer/" + id, content );
         }
     }
 }

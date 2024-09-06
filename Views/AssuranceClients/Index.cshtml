@@ -52,12 +52,16 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Statut)
                 </td>
-                <td>
-                    <a asp-controller="AssuranceClients" asp-action="Edit" asp-route-id="@item.ID">Modifier</a>
-                    <a asp-controller="AssuranceClients" asp-action="Delete" asp-route-id="@item.ID">Supprimer</a>
-                    <a asp-controller="AssuranceClients" asp-action="Index" asp-route-id="@item.ID">Confirmer</a>
+                @if (!item.Statut)
+                {
+                    <td>
+                        <a asp-controller="AssuranceClients" asp-action="Edit" asp-route-id="@item.ID">Modifier</a>
+                        <a asp-controller="AssuranceClients" asp-action="Delete" asp-route-id="@item.ID">Supprimer</a>
+                        <a asp-controller="AssuranceClients" asp-action="Index" asp-route-id="@item.ID">Confirmer</a>
 
-                </td>
+                    </td>
+                }
+                
             </tr>
         }
     </tbody>

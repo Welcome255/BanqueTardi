@@ -114,6 +114,13 @@ namespace BanqueTardi.Controllers
                 return View(collection);
             }
         }
+        [HttpPut]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Confirmer(int id)
+        {
+            await _assuranceClientServices.Confirmer(id);
+            return RedirectToAction(nameof(Index));
+        }
 
         private void ListeDesClients(object? selectedValue = null)
         {
