@@ -21,7 +21,7 @@ namespace Assurance.ApplicationCore.Entites
         public bool EstDiabetique { get; set; }
         public bool EstHypertendu { get; set; }
         public bool PratiqueActivitePhysique { get; set; }
-        public bool Statut { get; set; } 
+        public bool Statut { get; set; } = false;
 
     }
     public enum CodeRabais

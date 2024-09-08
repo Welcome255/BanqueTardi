@@ -6,10 +6,10 @@ namespace BanqueTardi.Interfaces
     public interface IAssuranceClientServices
     {
         Task<List<AssuranceTardiDTO>> ObtenirTout();
-        Task<AssuranceTardi> Obtenir(int id);
+        Task<AssuranceTardi> Obtenir(string id);
         Task Ajouter(AssuranceTardi Assurance);
-        Task Supprimer(int id);
+        Task Supprimer(string id);
         Task Modifier(AssuranceTardi Assurance);
-        Task Confirmer(int id);
+        Task Confirmer(string id);
     }
 }

@@ -23,10 +23,10 @@ namespace BanqueTardi.Services
         public async Task Modifier(AssuranceTardi Assurance)
         {
             StringContent content = new StringContent(JsonConvert.SerializeObject(Assurance), Encoding.UTF8, "application/json");
-            await _httpClient.PutAsync(_assuranceClientApiUrl + Assurance.ClientID, content);
+            await _httpClient.PostAsync(_assuranceClientApiUrl + "Modifier", content);
         }
 
-        public async Task<AssuranceTardi> Obtenir(int id)
+        public async Task<AssuranceTardi> Obtenir(string id)
         {
             return await _httpClient.GetFromJsonAsync<AssuranceTardi>(_assuranceClientApiUrl + id);
         }
@@ -36,14 +36,16 @@ namespace BanqueTardi.Services
             return await _httpClient.GetFromJsonAsync<List<AssuranceTardiDTO>>(_assuranceClientApiUrl);
         }
 
-        public async Task Supprimer(int id)
+        public async Task Supprimer(string id)
         {
             await _httpClient.DeleteAsync(_assuranceClientApiUrl + id); 
         }
-        public async Task Confirmer(int id)
+        public async Task Confirmer(string id)
         {
-            StringContent content = new StringContent(JsonConvert.SerializeObject(new {statut = true}), Encoding.UTF8, "application/json");
-            await _httpClient.PutAsync(_assuranceClientApiUrl+ "Confirmer/" + id, content );
+            var payload = true;
+            StringContent content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync(_assuranceClientApiUrl+ "Confirmer/" + id, content );
+            Console.WriteLine(response);
         }
-    }
 }
+    }

@@ -25,7 +25,7 @@ namespace BanqueTardi.Controllers
         }
 
         // GET: AssuranceClientsController/Details/5
-        public async Task<ActionResult> Details(int id)
+        public async Task<ActionResult> Details(string id)
         {
             return View(await _assuranceClientServices.Obtenir(id));
         }
@@ -57,7 +57,6 @@ namespace BanqueTardi.Controllers
                 EstFumeur = collection.EstFumeur,
                 EstHypertendu = collection.EstHypertendu,
                 PratiqueActivitePhysique = collection.PratiqueActivitePhysique,
-                Statut = collection.Statut,
             };
 
          
@@ -71,21 +70,51 @@ namespace BanqueTardi.Controllers
                 return View(collection);
             
         }
-
+        [HttpGet]
         // GET: AssuranceClientsController/Edit/5
-        public async Task<ActionResult> Edit(int id)
+        public async Task<ActionResult> Edit(string id)
         {
-            return View(await _assuranceClientServices.Obtenir(id));
+            ListeDesClients();
+            ViewBag.Id = id;
+            var assuranceTardi = await _assuranceClientServices.Obtenir(id);
+            AssuranceTardiBodyDTO assuranceTardiBodyDTO = new AssuranceTardiBodyDTO()
+            { 
+               ClientID =  assuranceTardi.ClientID,
+               Solde = assuranceTardi.Solde,
+               Sexe = assuranceTardi.Sexe,
+               EstDiabetique = assuranceTardi.EstDiabetique,
+               EstFumeur = assuranceTardi.EstFumeur,
+               EstHypertendu = assuranceTardi.EstHypertendu
+            };
+            return View(assuranceTardiBodyDTO);
         }
 
         // POST: AssuranceClientsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, AssuranceTardi collection)
+        public async Task<ActionResult> Edit(string id, AssuranceTardiBodyDTO collection)
         {
+            
+            AssuranceTardi assurance = new AssuranceTardi()
+            {
+                ID = id,
+                ClientID = collection.ClientID,
+                NomClient = _context.Clients.First(cl => cl.ClientID == collection.ClientID).NomClient,
+                PrenomClient = _context.Clients.First(cl => cl.ClientID == collection.ClientID).PrenomClient,
+                DateDeNaissance = _context.Clients.Where(c => c.ClientID == collection.ClientID).Single().DateNaissance,
+                CodePartenaire = "TARDI1010",
+                CodeRabais = CodeRabais.PRI,
+                Solde = collection.Solde,
+                Sexe = collection.Sexe,
+                EstDiabetique = collection.EstDiabetique,
+                EstFumeur = collection.EstFumeur,
+                EstHypertendu = collection.EstHypertendu,
+                PratiqueActivitePhysique = collection.PratiqueActivitePhysique,
+               
+            };
             if (ModelState.IsValid)
             {
-                await _assuranceClientServices.Modifier(collection);
+                await _assuranceClientServices.Modifier(assurance);
                 return RedirectToAction(nameof(Index));
             }
            
@@ -93,30 +122,18 @@ namespace BanqueTardi.Controllers
            
         }
 
+        [HttpGet]
         // GET: AssuranceClientsController/Delete/5
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(string id)
         {
-            return View(await _assuranceClientServices.Obtenir(id));
+              await _assuranceClientServices.Supprimer(id);
+            return RedirectToAction(nameof(Index));
         }
 
-        // POST: AssuranceClientsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(int id, AssuranceTardi collection)
-        {
-            try
-            {
-                await _assuranceClientServices.Supprimer(id);
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View(collection);
-            }
-        }
-        [HttpPut]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Confirmer(int id)
+        
+        
+        [HttpGet]
+        public async Task<ActionResult> Confirmer(string id)
         {
             await _assuranceClientServices.Confirmer(id);
             return RedirectToAction(nameof(Index));
@@ -126,5 +143,7 @@ namespace BanqueTardi.Controllers
         {
             ViewData["Client"] = new SelectList((_context.Clients), "ClientID", "FullName", selectedValue);
         }
+
+
     }
 }
