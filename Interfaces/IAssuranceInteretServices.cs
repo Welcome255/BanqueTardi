@@ -6,8 +6,8 @@ namespace BanqueTardi.Interfaces
 {
     public interface IAssuranceInteretServices
     {
-      
-        Task Ajouter(IEnumerable<InteretRequestDTO> interet);
+
+        Task<IEnumerable<InteretResponseDTO>> Ajouter(IEnumerable<InteretRequestDTO> interet);
        
     }
 }

@@ -14,10 +14,13 @@ namespace BanqueTardi.Services
         {
             _httpClient = httpClient;
         }
-        public async Task Ajouter(IEnumerable<InteretRequestDTO> comptes)
+        public async Task<IEnumerable<InteretResponseDTO>> Ajouter(IEnumerable<InteretRequestDTO> comptes)
         {
             StringContent content = new StringContent(JsonConvert.SerializeObject(comptes), Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync(_assuranceClientApiUrl + "CalculInteret", content);
+            var response = await _httpClient.PostAsync(_assuranceClientApiUrl + "CalculInteret", content);
+            string rawData = await response.Content.ReadAsStringAsync();
+            var listeInterets = JsonConvert.DeserializeObject<List<InteretResponseDTO>>(rawData);
+            return listeInterets;
         }
     }
 }

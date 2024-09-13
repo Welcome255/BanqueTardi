@@ -94,29 +94,65 @@ namespace BanqueTardi.Controllers
         }
 
         [HttpGet]
-        public ActionResult Envoyer()
+        public async Task<ActionResult> Envoyer()
         {
             List<Client> listeClients = _contexte.Clients.ToList();
+            List<InteretRequestDTO> listeObjetInteretDTODuClient = new List<InteretRequestDTO>();
             foreach (Client client in listeClients)
             {
-                List<InteretRequestDTO> listeObjetInteretDTODuClient = new List<InteretRequestDTO>();
                 var Donnee = DonneeGeneraleClient(client.ClientID);
                 foreach (Compte compte in Donnee.Comptes)
                 {
-                    InteretRequestDTO interetCompteDTO = new InteretRequestDTO()
+                    if(compte.TypeCompte!= Comptetype.Cheque)
                     {
-                        ClientID = client.ClientID,
-                        Montant = compte.Solde,
-                        DateFin = DateTime.Now,
-                        DateDebutCalcul = (compte.Operations.Any(op => op.Libelle == "Intêret")) ? compte.Operations.Last(op => op.Libelle == "Intéret").DateTransaction : compte.Operations.First().DateTransaction,
-                        TauxInteret = compte.TauxInteret,
-                    };
-                    listeObjetInteretDTODuClient.Add(interetCompteDTO);
+                        InteretRequestDTO interetCompteDTO = new InteretRequestDTO()
+                        {
+                            ClientID = client.ClientID,
+                            Montant = compte.Solde,
+                            DateFin = DateTime.Now,
+                            DateDebutCalcul = (compte.Operations.Any(op => op.Libelle == "Intêret")) ? compte.Operations.OrderByDescending(o => o.DateTransaction).First(op => op.Libelle == "Intêret").DateTransaction : compte.Operations.First().DateTransaction,
+                            TauxInteret = compte.TauxInteret,
+                            CompteType = compte.TypeCompte
+                        };
+                        listeObjetInteretDTODuClient.Add(interetCompteDTO);
+                    }
+                    else if(compte.Solde<0)
+                    {
+                        InteretRequestDTO interetCompteDTO = new InteretRequestDTO()
+                        {
+                            ClientID = client.ClientID,
+                            Montant = compte.Solde,
+                            DateFin = DateTime.Now,
+                            DateDebutCalcul = (compte.Operations.Any(op => op.Libelle == "Intêret")) ? compte.Operations.OrderByDescending(o => o.DateTransaction).First(op => op.Libelle == "Intéret").DateTransaction : compte.Operations.First().DateTransaction,
+                            TauxInteret = compte.TauxInteret,
+                        };
+                        listeObjetInteretDTODuClient.Add(interetCompteDTO);
+                    }    
                 }
-                _assuranceInteretServices.Ajouter(listeObjetInteretDTODuClient);
-
             }
-            return RedirectToAction(nameof(Index), controllerName: "Comptes");
+            IEnumerable<InteretResponseDTO> lesInteretCalcule = await _assuranceInteretServices.Ajouter(listeObjetInteretDTODuClient);
+            List<Compte> listeCompteMAJ = new List<Compte>();
+            foreach(InteretResponseDTO reponse  in lesInteretCalcule)
+            {
+              Compte compteMAJ = _contexte.Compte.First(c => c.TypeCompte == reponse.CompteType && c.ClientID == reponse.ClientID);
+                compteMAJ.Solde += reponse.Interet;
+                Operation operation = new Operation { 
+                    CompteID = compteMAJ.CompteID,
+                    Libelle = "Intêret",
+                    Montant= reponse.Interet,
+                    TypeOperation = CreditDebit.credit
+                };
+                _contexte.Add(operation);
+                listeCompteMAJ.Add(compteMAJ);
+            }
+            foreach(Compte compte1 in listeCompteMAJ)
+            {
+                _contexte.Compte.Update(compte1);
+                _contexte.SaveChangesAsync();
+            }
+
+
+           return RedirectToAction(nameof(Index), controllerName: "Clients");
         }
 
         public BanqueIndexData DonneeGeneraleClient(string id)
