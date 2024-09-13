@@ -148,11 +148,11 @@ namespace BanqueTardi.Controllers
             foreach(Compte compte1 in listeCompteMAJ)
             {
                 _contexte.Compte.Update(compte1);
-                _contexte.SaveChangesAsync();
             }
+            _contexte.SaveChangesAsync();
 
 
-           return RedirectToAction(nameof(Index), controllerName: "Clients");
+            return RedirectToAction(nameof(Index), controllerName: "Clients");
         }
 
         public BanqueIndexData DonneeGeneraleClient(string id)
