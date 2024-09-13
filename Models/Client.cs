@@ -32,6 +32,13 @@ namespace BanqueTardi.Models
         [DisplayName("Telephone parent")]
         [RegularExpression(@"^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$", ErrorMessage ="Le Numéro de téléphone n'est pas valide.")]
         public string? TelephoneParent { get; set; }
+        public string FullName 
+        {
+            get
+            {
+                return NomClient + "," + PrenomClient;
+            }  
+        }
 
 
         public virtual ICollection<Compte>? Comptes { get; set; }

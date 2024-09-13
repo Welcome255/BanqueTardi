@@ -11,7 +11,7 @@ using BanqueTardi.Models.ViewModels;
 using BanqueTardi.Contract;
 using BanqueTardi.DTO;
 using BanqueTardi.TardiCompte;
-using BanqueTardi.Migrations;
+
 
 namespace BanqueTardi.Controllers
 {

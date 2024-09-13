@@ -1,5 +1,7 @@
 using BanqueTardi.ContexteDb;
 using BanqueTardi.Data;
+using BanqueTardi.Interfaces;
+using BanqueTardi.Services;
 using BanqueTardi.TardiCompte;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,11 @@ builder.Services.AddDbContext<BanqueTardiContexte>(options =>
 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnexion")));
 
 builder.Services.AddScoped<IBanque, CompteCanadien>();
+builder.Services.AddHttpClient<IAssuranceClientServices, AssuranceClientServicesProxy>(client => 
+client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("UrlAPI")));
+
+builder.Services.AddHttpClient<IAssuranceInteretServices, AssuranceInteretServiceProxy>(client =>
+client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("UrlAPI")));
 
 var app = builder.Build();
 

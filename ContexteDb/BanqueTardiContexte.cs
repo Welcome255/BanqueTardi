@@ -1,6 +1,7 @@
 ﻿using BanqueTardi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Assurance.ApplicationCore.Entites;
 
 namespace BanqueTardi.ContexteDb
 {
@@ -20,5 +21,6 @@ namespace BanqueTardi.ContexteDb
             modelBuilder.Entity<Compte>().ToTable(nameof(Compte));
             modelBuilder.Entity<Operation>().ToTable(nameof(Operation));
         }
+        public DbSet<Assurance.ApplicationCore.Entites.AssuranceTardi> AssuranceClient { get; set; } = default!;
     }
 }
